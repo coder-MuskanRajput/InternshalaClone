@@ -1,12 +1,23 @@
 require("dotenv").config({ path : "./.env"});
 const express = require("express");
 const app = express();
+
+
+// DB Connection
+require("./models/database").connectDatabase();
+
 // const PORT = 3030;
 
 //logger
 
 const logger = require("morgan");
 app.use(logger("tiny"));
+
+
+//bodyparser 
+
+app.use(express.json());
+app.use(express.urlencoded({extended : false}));
 
 //routes
 app.use("/", require("./routes/indexRoutes"))
