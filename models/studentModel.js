@@ -4,6 +4,32 @@ const jwt = require("jsonwebtoken")
 
 const studentModel  = new mongoose.Schema(
     {
+        firstname :{
+            type:  String,
+            required :[true , "First Name is required"],
+            minLength :[4, "First name should be atleast 4 character long"],
+
+          },
+        lastname :{
+            type:  String,
+            required :[true , "Last Name is required"],
+            minLength :[4, "Last name should be atleast 4 character long"],
+          }, 
+        contact :{
+            type:  String,
+            required :[true , "Contact is required"],
+            maxLength :[10, "Contact must not exceed 10 character"],
+            minLength :[10, "Contact should be atleast 10 character long"], 
+          },
+        city : {
+            type:  String,
+            required :[true , "City is required"],
+            minLength :[3, "City should be atleast 3 character long"],
+          },
+        gender :{
+            type:String,
+            enum :["Male" , "Female" , "Others"]
+        },
         email: {
           type:  String,
           required :[true , "Email is required"],
@@ -21,6 +47,14 @@ const studentModel  = new mongoose.Schema(
             type : String ,
             default : "0",
         },
+        avatar : {
+            type: Object ,
+            default : {
+                fileId :"",
+                url : "https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80&w=1931&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            }
+        },
+
     } , {timestamps : true}
 );
 

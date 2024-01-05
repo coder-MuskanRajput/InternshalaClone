@@ -2,6 +2,9 @@ const { catchAsyncErrors } = require("../middlewares/catchAsyncErrors");
 const Student = require("../models/studentModel");
 const ErrorHandler = require("../utils/ErrorHandler");
 const { sendtoken } = require("../utils/SendToken");
+const { sendmail } = require("../utils/nodemailer");
+const path = require("path");
+const imagekit = require("../utils/imagekit").initImagekit()
 
 exports.homepage = catchAsyncErrors(async (req,res,next) => {
     res.json({message : "Secure  Homepage!"}); 
@@ -60,9 +63,6 @@ exports.studentsendmail = catchAsyncErrors(async (req,res,next) => {
     res.json({student , url}); 
 });
 
-
-
-
 exports.studentforgetlink = catchAsyncErrors(async (req,res,next) => {
     const student = await Student.findById(req.params.id).exec();
 
@@ -70,7 +70,6 @@ exports.studentforgetlink = catchAsyncErrors(async (req,res,next) => {
     return next(
         new ErrorHandler("User not found with this email address" , 404)
         );
-     
     if(student.resetPasswordToken == "1"){
         student.resetPasswordToken = "0";
         student.password = req.body.password;
@@ -87,7 +86,6 @@ exports.studentforgetlink = catchAsyncErrors(async (req,res,next) => {
     })
 });
 
-
 exports.studentresetpassword = catchAsyncErrors(async (req,res,next) => {
     const student = await Student.findById(req.params.id).exec();
 
@@ -98,3 +96,37 @@ exports.studentresetpassword = catchAsyncErrors(async (req,res,next) => {
     sendtoken(student , 201 , res)
     
 });
+
+exports.studentupdate = catchAsyncErrors(async (req,res,next) =>{
+    await Student.findByIdAndUpdate(req.params.id , req.body).exec();
+    res.status(200).json({
+        success : true , 
+        message : "Student Updated Successfully !",
+    })
+})
+
+exports.studentavatar = catchAsyncErrors(async (req,res,next) =>{
+    const student = await Student.findById(req.params.id).exec()
+    const file = req.files.avatar;
+    const modifiedFileName =`resumebuilder-${Date.now()}${path.extname(file.name)}`;
+
+
+     // purani file delete krke new file update krne k liye
+
+    if(student.avatar.fileID !== ""){
+        await imagekit.deleteFile(student.avatar.fileId);
+     }
+
+    ///
+    const {fileId , url} = await imagekit.upload({
+        file : file.date,
+        fileName : modifiedFileName
+    });
+    student.avatar = {fileId , url};
+    await student.save();
+    res.json({image});
+    res.status(200).json({
+        success : true , 
+        message : "Student Avatar Uploaded Successfully !",
+    })
+})
