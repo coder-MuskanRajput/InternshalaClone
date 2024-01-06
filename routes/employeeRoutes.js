@@ -8,11 +8,11 @@ const {
     employeesignup ,
     employeesignin,
     employeesignout,
-    // employeesendmail,
-    // employeeforgetlink,
-    // employeeresetpassword,
-    // employeeupdate,
-    // employeeavatar,
+    employeesendmail,
+    employeeforgetlink,
+    employeeresetpassword,
+    employeeupdate,
+    employeeavatar,
 
     } = require("../controllers/employeeController");
 const { isAuthenticated } = require("../middlewares/auth");
@@ -41,24 +41,24 @@ router.post("/signin" , employeesignin)
 router.get("/signout" ,isAuthenticated, employeesignout)
 
 
-// // POST / employee/send-mail
+// POST / employee/send-mail
 
-// router.post("/employee/send-mail" , employeesendmail)
+router.post("/send-mail" , employeesendmail)
 
-// // GET /employee/forget-link/:employeeid
+// GET /employee/forget-link/:employeeid
 
-// router.get("/employee/forget-link/:id" , employeeforgetlink);
+router.get("/forget-link/:id" , employeeforgetlink);
 
-// // POST /employee/reset-password/:employeeid
+// POST /employee/reset-password/:employeeid
 
-// router.post("/employee/reset-password/:id"  , isAuthenticated, employeeresetpassword);
+router.post("/reset-password/:id"  , isAuthenticated, employeeresetpassword);
 
-// // POST /employee/update/:employeeid
+// POST /employee/update/:employeeid
 
-// router.post("/employee/update/:id"  , isAuthenticated, employeeupdate);
+router.post("/update/:id"  , isAuthenticated, employeeupdate);
 
-// // POST /employee/avatar/:employeeid
+// POST /employee/organizationLogo/:employeeid
 
-// router.post("/employee/avatar/:id"  , isAuthenticated, employeeavatar);
+router.post("/organization-logo/:id"  , isAuthenticated, employeeavatar);
 
 module.exports = router;
