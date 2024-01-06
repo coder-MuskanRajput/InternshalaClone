@@ -214,7 +214,6 @@ exports.editAccomplishments =  catchAsyncErrors(async(req,res,next) => {
     student.resume.accomplishments[eduIndex] =
      {...student.resume.accomplishments[eduIndex], ...req.body} 
     await student.save();
-
     res.json({message : "Accomplishments Updated "})
 })
 
@@ -223,6 +222,5 @@ exports.deleteAccomplishments =  catchAsyncErrors(async(req,res,next) => {
     const filteredAccomplishments = student.resume.accomplishments.filter((e) =>e.id !== req.params.accomid);
     student.resume.accomplishments = filteredAccomplishments
     await student.save();
-
     res.json({message : "Accomplishments Deleted "})
 })
