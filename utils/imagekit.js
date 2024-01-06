@@ -1,5 +1,3 @@
-
-
 var ImageKit = require("imagekit");
 
 exports.initImagekit = function(){
@@ -9,6 +7,5 @@ exports.initImagekit = function(){
         privateKey : process.env.PRIVATEKEY_IMAGEKIT,
         urlEndpoint : process.env.ENDPOINTURL_IMAGEKIT
     });
-
     return imagekit;
 }
