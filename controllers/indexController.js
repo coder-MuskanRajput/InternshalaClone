@@ -113,18 +113,18 @@ exports.studentavatar = catchAsyncErrors(async (req,res,next) =>{
 
      // purani file delete krke new file update krne k liye
 
-    if(student.avatar.fileID !== ""){
+    if(student.avatar.fileId !== ""){
         await imagekit.deleteFile(student.avatar.fileId);
      }
 
     ///
     const {fileId , url} = await imagekit.upload({
-        file : file.date,
+        file : file.data,
         fileName : modifiedFileName
     });
     student.avatar = {fileId , url};
     await student.save();
-    res.json({image});
+    // res.json({image});
     res.status(200).json({
         success : true , 
         message : "Student Avatar Uploaded Successfully !",
