@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 
 const { 
-    
     homepage , 
     currentEmployee,
     employeesignup ,
@@ -13,8 +12,12 @@ const {
     employeeresetpassword,
     employeeupdate,
     employeeavatar,
-    createInternship
-
+    createInternship,
+    readInternship,
+    readSingleInternship,
+    createJob,
+    readJob,
+    readSingleJob,
     } = require("../controllers/employeeController");
 const { isAuthenticated } = require("../middlewares/auth");
 
@@ -69,6 +72,28 @@ router.post("/organization-logo/:id"  , isAuthenticated, employeeavatar);
 
 router.post("/internship/create"  , isAuthenticated, createInternship);
 
+// POST /employee/ internship / read
+
+router.post("/internship/read"  , isAuthenticated, readInternship);
+
+
+// POST /employee/ internship /read /:id
+
+router.post("/internship/read/:id"  , isAuthenticated, readSingleInternship);
+
+//====================== job ====================
+
+// POST /employee/ job / create
+
+router.post("/job/create"  , isAuthenticated, createJob);
+
+// POST /employee/ job / read
+
+router.post("/job/read"  , isAuthenticated, readJob);
+
+// POST /employee/ job /read /:id
+
+router.post("/job/read/:id"  , isAuthenticated, readSingleJob);
 
 
 module.exports = router;
