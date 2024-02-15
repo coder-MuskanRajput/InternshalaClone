@@ -3,15 +3,15 @@ const router = express.Router();
 
 const { 
     homepage , 
-    currentEmployee,
-    employeesignup ,
-    employeesignin,
-    employeesignout,
-    employeesendmail,
-    employeeforgetlink,
-    employeeresetpassword,
-    employeeupdate,
-    employeeavatar,
+    currentUser,
+    employeeSignup ,
+    employeeSignIn,
+    employeeSignOut,
+    employeeSendMail,
+    employeeForgetLink,
+    employeeResetPassword,
+    employeeUpdate,
+    employeeAvatar,
     createInternship,
     readInternship,
     readSingleInternship,
@@ -27,43 +27,43 @@ router.get("/" , homepage)
 
 //POST /employee
 
-router.post("/current" , isAuthenticated , currentEmployee)
+router.post("/current" , isAuthenticated , currentUser)
 
 
 // POST / employee / signup 
 
-router.post("/signup" , employeesignup)
+router.post("/signup" , employeeSignup)
 
 
 // POST / employee / signin 
 
-router.post("/signin" , employeesignin)
+router.post("/signIn" , employeeSignIn)
 
 
 // GET / employee / signout
 
-router.get("/signout" ,isAuthenticated, employeesignout)
+router.get("/signOut" ,isAuthenticated, employeeSignOut)
 
 
 // POST / employee/send-mail
 
-router.post("/send-mail" , employeesendmail)
+router.post("/send-mail" , employeeSendMail)
 
 // GET /employee/forget-link/:employeeid
 
-router.get("/forget-link/:id" , employeeforgetlink);
+router.get("/forget-link/:id" , employeeForgetLink);
 
 // POST /employee/reset-password/:employeeid
 
-router.post("/reset-password/:id"  , isAuthenticated, employeeresetpassword);
+router.post("/reset-password/:id"  , isAuthenticated, employeeResetPassword);
 
 // POST /employee/update/:employeeid
 
-router.post("/update/:id"  , isAuthenticated, employeeupdate);
+router.post("/update/:id"  , isAuthenticated, employeeUpdate);
 
 // POST /employee/organizationLogo/:employeeid
 
-router.post("/organization-logo/:id"  , isAuthenticated, employeeavatar);
+router.post("/organization-logo/:id"  , isAuthenticated, employeeAvatar);
 
 
 //====================== Internship ====================

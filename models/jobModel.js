@@ -15,7 +15,7 @@ const jobModel  = new mongoose.Schema(
         preferences :String,
         salary : Number,
         perks : String,
-        assesments : String,
+        assessments : String,
 
     } , {timestamps : true}
 );

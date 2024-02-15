@@ -4,13 +4,17 @@ const jwt = require("jsonwebtoken")
 
 const studentModel  = new mongoose.Schema(
     {
-        firstname :{
+        userType:{
+            type: String,
+            default:"student"
+        },
+        firstName :{
             type:  String,
             required :[true , "First Name is required"],
             minLength :[4, "First name should be atleast 4 character long"],
 
           },
-        lastname :{
+        lastName :{
             type:  String,
             required :[true , "Last Name is required"],
             minLength :[4, "Last name should be atleast 4 character long"],
@@ -85,11 +89,11 @@ studentModel.pre("save" , function(){
    this.password = bcrypt.hashSync(this.password , salt);
 });
 
-studentModel.methods.comparepassword= function(password){
+studentModel.methods.comparePassword= function(password){
     return bcrypt.compareSync(password , this.password)
 }
 
-studentModel.methods.getjwttoken = function(){
+studentModel.methods.getJWTToken = function(){
     return jwt.sign({id: this._id} , process.env.JWT_SECRET , {
        expiresIn : process.env.JWT_EXPIRE,
     })

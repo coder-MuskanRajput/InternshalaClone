@@ -3,7 +3,7 @@ const Student = require("../models/studentModel");
 const Internship = require("../models/internshipModel");
 const Job = require("../models/jobModel");
 const ErrorHandler = require("../utils/ErrorHandler");
-const { sendtoken } = require("../utils/SendToken");
+const { sendToken } = require("../utils/SendToken");
 const { sendmail } = require("../utils/nodemailer");
 const path = require("path");
 const imagekit = require("../utils/imagekit").initImagekit()
@@ -17,14 +17,14 @@ exports.currentUser = catchAsyncErrors(async (req,res,next) => {
     res.json({student})
 })
 
-exports.studentsignup = catchAsyncErrors(async (req,res,next) =>{
+exports.studentSignup = catchAsyncErrors(async (req,res,next) =>{
     // res.json(req.body);
     const student = await new Student(req.body).save();
     sendtoken(student , 201 , res)
     // res.status(201).json(student);
 })
 
-exports.studentsignin = catchAsyncErrors(async (req,res,next) =>{
+exports.studentSignin = catchAsyncErrors(async (req,res,next) =>{
     // res.json(req.body)
 
     const student = await Student
@@ -37,16 +37,16 @@ exports.studentsignin = catchAsyncErrors(async (req,res,next) =>{
         new ErrorHandler("User not found with this email address" , 404)
         );
      
-    const isMatch = student.comparepassword(req.body.password)
+    const isMatch = student.comparePassword(req.body.password)
   if(!isMatch ) return next (new ErrorHandler("Wrong Credentials" , 500));
     // res.json(student)
-    sendtoken(student , 200 , res)
+    sendToken(student , 200 , res)
 })
 
-exports.studentsignout = catchAsyncErrors(async (req,res,next) =>{
+exports.studentSignOut = catchAsyncErrors(async (req,res,next) =>{
     
     res.clearCookie("token");
-    res.json({message : `Please login to access the resources` ,
+    res.json({message : `logout ,Please login to access the resources` ,
               errName : "Error"})
 })
 
@@ -65,16 +65,17 @@ exports.studentsendmail = catchAsyncErrors(async (req,res,next) => {
     res.json({student , url}); 
 });
 
-exports.studentforgetlink = catchAsyncErrors(async (req,res,next) => {
+exports.studentForgetLink = catchAsyncErrors(async (req,res,next) => {
     const student = await Student.findById(req.params.id).exec();
 
     if(!student) 
     return next(
         new ErrorHandler("User not found with this email address" , 404)
         );
-    if(student.resetPasswordToken == "1"){
-        student.resetPasswordToken = "0";
+    if(student.resetPasswordToken == 1){
         student.password = req.body.password;
+        student.resetPasswordToken = 0;
+
     }
     else{
         return next(
@@ -88,29 +89,29 @@ exports.studentforgetlink = catchAsyncErrors(async (req,res,next) => {
     })
 });
 
-exports.studentresetpassword = catchAsyncErrors(async (req,res,next) => {
+exports.studentResetPassword = catchAsyncErrors(async (req,res,next) => {
     const student = await Student.findById(req.params.id).exec();
 
         student.password = req.body.password;
     
     await student.save();
 
-    sendtoken(student , 201 , res)
+    sendToken(student , 201 , res)
     
 });
 
-exports.studentupdate = catchAsyncErrors(async (req,res,next) =>{
-    await Student.findByIdAndUpdate(req.params.id , req.body).exec();
+exports.studentUpdate = catchAsyncErrors(async (req,res,next) =>{
+    const student =await Student.findByIdAndUpdate(req.params.id , req.body).exec();
     res.status(200).json({
         success : true , 
-        message : "Student Updated Successfully !",
+        message : "Student Updated Successfully !",student
     })
 })
 
-exports.studentavatar = catchAsyncErrors(async (req,res,next) =>{
+exports.studentAvatar = catchAsyncErrors(async (req,res,next) =>{
     const student = await Student.findById(req.params.id).exec()
     const file = req.files.avatar;
-    const modifiedFileName =`resumebuilder-${Date.now()}${path.extname(file.name)}`;
+    const modifiedFileName =`resumeBuilder-${Date.now()}${path.extname(file.name)}`;
 
 
      // purani file delete krke new file update krne k liye
@@ -137,7 +138,7 @@ exports.studentavatar = catchAsyncErrors(async (req,res,next) =>{
 
 exports.applyInternship = catchAsyncErrors(async (req,res,next) => {
     const student = await Student.findById(req.id).exec();
-    const internship = await Internship.findById(req.params.internshipid).exec();
+    const internship = await Internship.findById(req.params.id).exec();
     
     student.internships.push(internship._id);
     internship.students.push(student._id);
@@ -151,7 +152,7 @@ exports.applyInternship = catchAsyncErrors(async (req,res,next) => {
 
 exports.applyJob = catchAsyncErrors(async (req,res,next) => {
     const student = await Student.findById(req.id).exec();
-    const job = await Job.findById(req.params.jobid).exec();
+    const job = await Job.findById(req.params.id).exec();
     
     student.jobs.push(job._id);
     job.students.push(student._id);

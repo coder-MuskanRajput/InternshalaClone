@@ -4,13 +4,17 @@ const jwt = require("jsonwebtoken")
 
 const employeeModel  = new mongoose.Schema(
     {
-        firstname :{
+        userType:{
+              type: String,
+              default : "employee"
+        },
+        firstName :{
             type:  String,
             required :[true , "First Name is required"],
             minLength :[4, "First name should be atleast 4 character long"],
 
           },
-        lastname :{
+        lastName :{
             type:  String,
             required :[true , "Last Name is required"],
             minLength :[4, "Last name should be atleast 4 character long"],
@@ -21,6 +25,11 @@ const employeeModel  = new mongoose.Schema(
             maxLength :[10, "Contact must not exceed 10 character"],
             minLength :[10, "Contact should be atleast 10 character long"], 
           },
+          city:{
+            type:String,
+            required:[true, "last name is required"],
+            minLength:[3, "City name should be at-least 4 character long"]
+        },
         email: {
           type:  String,
           required :[true , "Email is required"],

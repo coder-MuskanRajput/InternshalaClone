@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 const internshipModel  = new mongoose.Schema(
     {
-        students : { type : mongoose.Schema.Types.ObjectId , ref: "student"},
+        students :[{ type : mongoose.Schema.Types.ObjectId , ref: "student"}],
         employee : { type : mongoose.Schema.Types.ObjectId , ref: "employee"},
         profile :  String ,
         skill : String,
-        internshiptype :{
+        internshipType :{
             type : String ,
             enum : ["In Office" , "Remote"]
         }, 
@@ -23,7 +23,7 @@ const internshipModel  = new mongoose.Schema(
             amount : Number,
         },
         perks : String,
-        assesments : String,
+        assessment : String,
 
     } , {timestamps : true}
 );

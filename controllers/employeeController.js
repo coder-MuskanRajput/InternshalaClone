@@ -3,28 +3,28 @@ const Employee = require("../models/employeeModel");
 const Internship = require("../models/internshipModel");
 const Job = require("../models/jobModel");
 const ErrorHandler = require("../utils/ErrorHandler");
-const { sendtoken } = require("../utils/SendToken");
-const { sendmail } = require("../utils/nodemailer");
 const path = require("path");
+const { sendToken } = require("../utils/SendToken");
+const { sendmail } = require("../utils/nodemailer");
 const imagekit = require("../utils/imagekit").initImagekit()
 
 exports.homepage = catchAsyncErrors(async (req,res,next) => {
     res.json({message : "Secure Employee Homepage!"}); 
 });
 
-exports.currentEmployee = catchAsyncErrors(async (req,res,next) => {
+exports.currentUser = catchAsyncErrors(async (req,res,next) => {
     const employee = await Employee.findById(req.id).exec();
     res.json({employee})
 })
 
-exports.employeesignup = catchAsyncErrors(async (req,res,next) =>{
+exports.employeeSignup = catchAsyncErrors(async (req,res,next) =>{
     // res.json(req.body);
     const employee = await new Employee(req.body).save();
-    sendtoken(employee , 201 , res)
+    sendToken(employee , 201 , res)
     // res.status(201).json(employee);
 })
 
-exports.employeesignin = catchAsyncErrors(async (req,res,next) =>{
+exports.employeeSignIn = catchAsyncErrors(async (req,res,next) =>{
     // res.json(req.body)
 
     const employee = await Employee
@@ -37,20 +37,20 @@ exports.employeesignin = catchAsyncErrors(async (req,res,next) =>{
         new ErrorHandler("User not found with this email address" , 404)
         );
      
-    const isMatch = employee.comparepassword(req.body.password)
+    const isMatch = employee.comparePassword(req.body.password)
   if(!isMatch ) return next (new ErrorHandler("Wrong Credentials" , 500));
     // res.json(employee)
-    sendtoken(employee , 200 , res)
+    sendToken(employee , 200 , res)
 })
 
-exports.employeesignout = catchAsyncErrors(async (req,res,next) =>{
+exports.employeeSignOut = catchAsyncErrors(async (req,res,next) =>{
     
     res.clearCookie("token");
-    res.json({message : `Please login to access the resources` ,
+    res.json({message : `Log out ,Please login to access the resources` ,
               errName : "Error"})
 })
 
-exports.employeesendmail = catchAsyncErrors(async (req,res,next) => {
+exports.employeeSendMail = catchAsyncErrors(async (req,res,next) => {
     const employee = await Employee.findOne({email : req.body.email}).exec();
      console.log(employee);
     if(!employee) 
@@ -60,21 +60,21 @@ exports.employeesendmail = catchAsyncErrors(async (req,res,next) => {
 
     const url = `${req.protocol}://${req.get("host")}/employee/forget-link/${employee._id}`;
     sendmail(req,res,next,url);
-    employee.resetPasswordToken = "1";
+    employee.resetPasswordToken = 1;
     await employee.save();
     res.json({employee , url}); 
 });
 
-exports.employeeforgetlink = catchAsyncErrors(async (req,res,next) => {
+exports.employeeForgetLink = catchAsyncErrors(async (req,res,next) => {
     const employee = await Employee.findById(req.params.id).exec();
 
     if(!employee) 
     return next(
         new ErrorHandler("User not found with this email address" , 404)
         );
-    if(employee.resetPasswordToken == "1"){
-        employee.resetPasswordToken = "0";
+    if(employee.resetPasswordToken === 1){
         employee.password = req.body.password;
+        employee.resetPasswordToken = 0 ;
     }
     else{
         return next(
@@ -88,29 +88,29 @@ exports.employeeforgetlink = catchAsyncErrors(async (req,res,next) => {
     })
 });
 
-exports.employeeresetpassword = catchAsyncErrors(async (req,res,next) => {
+exports.employeeResetPassword = catchAsyncErrors(async (req,res,next) => {
     const employee = await Employee.findById(req.params.id).exec();
 
         employee.password = req.body.password;
     
     await employee.save();
 
-    sendtoken(employee , 201 , res)
+    sendToken(employee , 201 , res)
     
 });
 
-exports.employeeupdate = catchAsyncErrors(async (req,res,next) =>{
-    await Employee.findByIdAndUpdate(req.params.id , req.body).exec();
+exports.employeeUpdate = catchAsyncErrors(async (req,res,next) =>{
+   const employee = await Employee.findByIdAndUpdate(req.params.id , req.body).exec();
     res.status(200).json({
         success : true , 
-        message : "employee Updated Successfully !",
+        message : "employee Updated Successfully !", employee
     })
 })
 
-exports.employeeavatar = catchAsyncErrors(async (req,res,next) =>{
+exports.employeeAvatar = catchAsyncErrors(async (req,res,next) =>{
     const employee = await Employee.findById(req.params.id).exec()
     const file = req.files.organizationLogo;
-    const modifiedFileName =`resumebuilder-${Date.now()}${path.extname(file.name)}`;
+    const modifiedFileName =`resumeBuilder-${Date.now()}${path.extname(file.name)}`;
 
 
      // purani file delete krke new file update krne k liye
@@ -135,9 +135,11 @@ exports.employeeavatar = catchAsyncErrors(async (req,res,next) =>{
 
 // ========================= Internship ===================
 exports.createInternship = catchAsyncErrors(async (req,res,next) =>{
-    const employee = await Employee.findById(req.id).exec();
     const internship  = await new Internship(req.body)
-    internship.employee = employee._id
+    internship.employee = req.id
+
+    const employee = await Employee.findById(req.id).exec();
+
     employee.internships.push(internship._id);
     await internship.save();
     await employee.save();
@@ -151,6 +153,7 @@ exports.readInternship = catchAsyncErrors(async (req,res,next) =>{
 
 exports.readSingleInternship = catchAsyncErrors(async (req,res,next) =>{
     const internship  = await Internship.findById(req.params.id).exec();
+    if(!internship) return new ErrorHandler("Internship not found")
     res.status(201).json({success : true , internship})
 })
 
@@ -158,9 +161,9 @@ exports.readSingleInternship = catchAsyncErrors(async (req,res,next) =>{
 
 // ========================= Jobs ===================
 exports.createJob = catchAsyncErrors(async (req,res,next) =>{
-    const employee = await Employee.findById(req.id).exec();
     const job  = await new Job(req.body)
-    job.employee = employee._id
+    job.employee = req.id
+    const employee = await Employee.findById(req.id).exec();
     employee.jobs.push(job._id);
     await job.save();
     await employee.save();
@@ -174,6 +177,7 @@ exports.readJob = catchAsyncErrors(async (req,res,next) =>{
 
 exports.readSingleJob = catchAsyncErrors(async (req,res,next) =>{
     const job  = await Job.findById(req.params.id).exec();
+    if(!job) return new ErrorHandler("Job not found")
     res.status(201).json({success : true , job})
 })
 

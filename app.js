@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 
 
+
 // DB Connection
 require("./models/database").connectDatabase();
 
@@ -19,10 +20,14 @@ app.use(logger("tiny"));
 app.use(express.json());
 app.use(express.urlencoded({extended : false}));
 
+//cors
+const cors = require("cors");
+app.use(cors({credentials:true , origin : true}))
+
 //session and cookie
 
 const session = require("express-session")
-const cookieparser =  require("cookie-parser")
+const cookieParser =  require("cookie-parser")
 
 app.use(session({
     resave : true ,
@@ -30,15 +35,20 @@ app.use(session({
     secret : process.env.EXPRESS_SESSION_SECRET
 }))
 
-app.use(cookieparser());
+app.use(cookieParser());
 
 // express file-upload 
 
 const fileupload = require("express-fileupload");
 app.use(fileupload());
 
+// isLoggedIn
+const {isLoggedIn} = require('./middlewares/isLoggedIn');
+app.use(isLoggedIn);
+
 //routes
-app.use("/user", require("./routes/indexRoutes"))
+app.use('/', require('./routes/homeRoutes'))
+app.use("/student", require("./routes/indexRoutes"))
 app.use("/resume", require("./routes/resumeRoutes"))
 app.use("/employee", require("./routes/employeeRoutes"))
 
